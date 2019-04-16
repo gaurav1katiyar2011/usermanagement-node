@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {Group } = require('../sequelize')
+const db = require('../sequelize')
 
 // Get all group list
 const successPromise = (resObj,result,message)=>{
@@ -18,7 +18,11 @@ const failurePromise = (resObj,error,code,message)=>{
     })
 }
 router.get('/',(req,res)=>{
-    Group.findAll()
+    db.groups.findAll({include: [
+        {
+          model: db.users
+        }
+      ]})
         .then((groups)=>{
             if (groups){
                 return successPromise(res,groups,'success')
@@ -27,7 +31,7 @@ router.get('/',(req,res)=>{
             }
         })
         .catch((error)=>{
-            return failurePromise(res,error,'','failure')    
+            return failurePromise(res,error,'500','failure')    
     })        
 })
 // get group by id
@@ -36,7 +40,7 @@ router.get('/:id',(req,res, next)=>{
     if(!Id){
         return failurePromise(res,'request not valid', '400','failure')
     }else{
-        Group.findAll({where: {id: Id}}).then((group)=>{
+        db.groups.findAll({where: {id: Id}}).then((group)=>{
             return successPromise(res,group,'200','success');
         }).catch((err)=>{
             return failurePromise(res,err.errors,'500','failure')
@@ -51,7 +55,7 @@ router.put('/:id', (req,res)=>{
     if (!Id ){
         return failurePromise(res,'request not valid', '400','failure')
     }   
-    Group.update(
+    db.groups.update(
         {name: groupName},
         {returning: true, where: {id: Id }}
     )
@@ -67,7 +71,7 @@ router.delete('/:id', (req,res)=>{
     if (!Id ){
         return failurePromise(res,'request not valid', '400','failure')
     }   
-    Group.destroy(
+    db.groups.destroy(
         {returning: true, where: {id: Id }}
     )
     .then((group) => {
@@ -82,7 +86,7 @@ router.post('/',(req, res, next)=>{
     if(!req.body.groupName){
         return failurePromise(res,'please provide group name', '400','failure')
     }else{
-        Group.create({ name: req.body.groupName }, { fields: [ 'name' ] }).then((group)=> {
+        db.groups.create({ name: req.body.groupName }, { fields: [ 'name' ] }).then((group)=> {
             return successPromise(res,group,'200','New Group Successfully Added');
           }).catch((err)=>{
             return failurePromise(res,err.errors,'500','failure')
@@ -94,7 +98,7 @@ router.post('/addgroup',(req, res, next)=>{
     if(!req.body.groupName){
         return failurePromise(res,'please provide group name','400','failure');
     }else{
-        Group.build({name: req.body.groupName})
+        db.groups.build({name: req.body.groupName})
         .save()
         .then((group)=> {
             return successPromise(res, group,'200', 'New Group Successfully Added');

@@ -14,13 +14,26 @@ const sequelize = new Sequelize('sequelize', 'postgres', null, {
     idle: 10000
   }
 });
-const User = UserModel(sequelize, Sequelize)
-const Group = GroupModel(sequelize, Sequelize)
-sequelize.sync()
-  .then(() => {
-    console.log(`Database & tables created!`)
-  })
-module.exports = {
-  User,
-  Group
-}
+
+const db = {};
+
+db.Sequelize = Sequelize;  
+db.sequelize = sequelize;
+
+const Users = UserModel(sequelize, Sequelize)
+const Groups = GroupModel(sequelize, Sequelize)
+db.users = Users;
+db.groups = Groups;
+//Relations
+db.groups.hasMany(db.users, {foreignKey: 'group_id'})
+db.users.belongsTo(db.groups, {foreignKey: 'group_id'})
+
+// sequelize.sync()
+//   .then(() => {
+//     console.log(`Database & tables created!`)
+//   })
+module.exports = db;  
+
+
+
+

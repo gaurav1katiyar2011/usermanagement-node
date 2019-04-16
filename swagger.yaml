@@ -43,11 +43,27 @@ paths:
       responses:
         200:
           description: OK
-          schema:
-            $ref: '#/definitions/Group'
         400:
           description: The specified Group Id is invalid (e.g. not a number).
         404:
           description: A Group with the specified ID was not found.
         default:
           description: Unexpected error
+  /users:
+      get:
+        summary: Returns a list of available Users.
+        description: Optional extended description in Markdown.
+        produces:
+          - application/json
+        responses:
+          200:
+            description: User object.
+            schema:
+              type: object
+              
+          400:
+            description: The specified Group Id is invalid (e.g. not a number).
+          404:
+            description: A Group with the specified ID was not found.
+          default:
+            description: Unexpected error

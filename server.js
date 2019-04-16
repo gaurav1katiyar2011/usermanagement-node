@@ -28,9 +28,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/', function(req, res){
     res.send('Please use api endpoints to get or post data!');
 });
-//app.use('/api/user', userRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/groups', groupRoutes);
-//app.use('/api/stats', statsRoutes);
+app.use('/api/stats', statsRoutes);
 
 
 const port = 7001;

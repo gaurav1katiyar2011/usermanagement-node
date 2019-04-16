@@ -27,13 +27,10 @@ module.exports = function(sequelize, DataTypes) {
     },
     group_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'groups',
-        key: 'id'
-      }
+      allowNull: false
     }
   }, {
     tableName: 'users'
+    
   });
 };
