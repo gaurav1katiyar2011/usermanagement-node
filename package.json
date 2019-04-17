@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "log4js": "^4.1.0",
     "nodemon": "^1.18.10",
     "pg": "^7.9.0",
     "pg-hstore": "^2.3.2",

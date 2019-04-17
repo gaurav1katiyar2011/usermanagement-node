@@ -34,11 +34,11 @@ router.get('/',(req,res)=>{
     })        
 })
 router.post('/',(req, res, next)=>{
-    const {userId, password, username, groupId} = req.body;
+    const {userId, password, username, groupId,email} = req.body;
     if(!userId && !password && !username && !groupId ){
         return failurePromise(res,'required field ', '400','failure')
     }else{
-        db.users.create({ username: username, user_id: userId, password: password, group_id: groupId }, { fields: [ 'username', 'user_id','password','group_id' ] }).then((user)=> {
+        db.users.create({ username, user_id: userId, password, group_id: groupId,email }, { fields: [ 'username', 'user_id','password','group_id','email' ] }).then((user)=> {
             return successPromise(res,user,'200','User Successfully Added');
           }).catch((err)=>{
             return failurePromise(res,err,'500','failure')
@@ -63,17 +63,38 @@ router.get('/:userid',(req,res, next)=>{
         })
     }    
 });
+router.get('/bygroup/:groupId',(req,res, next)=>{
+    const groupId= req.params.groupId;
+    if(!groupId){
+        return failurePromise(res,'request not valid', '400','failure')
+    }else{
+        db.users.findAll({where: {group_id: groupId},include: [
+            {
+              model: db.groups 
+            }
+          ]
+        }).then((user)=>{
+            return successPromise(res,user,'success');
+        }).catch((err)=>{
+            console.log(err)
+            return failurePromise(res,err.errors,'500','failure')
+        })
+    }    
+});
 
 router.put('/:userid', (req,res)=>{
     const userId= req.params.userid;
+    const email= req.body.email;
     const groupId= req.body.groupId;
     const username= req.body.username;
     const password= req.body.password;
+    console.log(userId,email,)
+    console.log("updating")
     if (!userId ){
         return failurePromise(res,'request not valid', '400','failure')
     } 
     db.users.update(
-        {username: username, password: password, group_id: groupId},
+        {username: username, email:email,password: password,  group_id: groupId},
         {returning: true, where: {user_id: userId }}
     )
     .then((user) => {
