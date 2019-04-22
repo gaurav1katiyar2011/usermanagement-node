@@ -48,10 +48,19 @@ router.get('/:id',(req,res, next)=>{
     }    
 });
 
+router.get('/search/:term', function (req, res, next) {
+    db.groups.findAll({where: {name: {$iLike:'%'+req.params.term.trim()+'%'}}})
+    .then((group)=>{
+        return successPromise(res,group,'200','success');
+    }).catch((err)=>{
+        return failurePromise(res,err,'500','failure')
+    })
+});
+
 
 router.put('/:id', (req,res)=>{
     const Id= req.params.id;
-    const groupName= req.body.groupName;
+    const groupName= req.body.name;
     if (!Id ){
         return failurePromise(res,'request not valid', '400','failure')
     }   
@@ -93,19 +102,19 @@ router.post('/',(req, res, next)=>{
         })
     }
 })
-// Building a non-persistent instance
-router.post('/addgroup',(req, res, next)=>{
-    if(!req.body.groupName){
-        return failurePromise(res,'please provide group name','400','failure');
-    }else{
-        db.groups.build({name: req.body.groupName})
-        .save()
-        .then((group)=> {
-            return successPromise(res, group,'200', 'New Group Successfully Added');
-        })
-        .catch((error)=> {
-            return failurePromise(res, error.errors,'500', 'failure');   
-        })
-    }
-})
+// // Building a non-persistent instance
+// router.post('/addgroup',(req, res, next)=>{
+//     if(!req.body.groupName){
+//         return failurePromise(res,'please provide group name','400','failure');
+//     }else{
+//         db.groups.build({name: req.body.groupName})
+//         .save()
+//         .then((group)=> {
+//             return successPromise(res, group,'200', 'New Group Successfully Added');
+//         })
+//         .catch((error)=> {
+//             return failurePromise(res, error.errors,'500', 'failure');   
+//         })
+//     }
+// })
 module.exports = router;

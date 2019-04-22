@@ -19,7 +19,7 @@ const failurePromise = (resObj,error,code,message)=>{
 }
 
 router.get('/',(req,res)=>{
-    db.users.findAll( {include: [{ model: db.groups }] })        
+    db.users.findAll( {include: [{ model: db.groups,include: [{model: db.tabs}] }] })        
     .then((users)=>{
             if (users){
                 return successPromise(res,users,'success')
@@ -52,25 +52,8 @@ router.get('/:userid',(req,res, next)=>{
     }else{
         db.users.findAll({where: {user_id: userId},include: [
             {
-              model: db.groups 
-            }
-          ]
-        }).then((user)=>{
-            return successPromise(res,user,'success');
-        }).catch((err)=>{
-            console.log(err)
-            return failurePromise(res,err.errors,'500','failure')
-        })
-    }    
-});
-router.get('/bygroup/:groupId',(req,res, next)=>{
-    const groupId= req.params.groupId;
-    if(!groupId){
-        return failurePromise(res,'request not valid', '400','failure')
-    }else{
-        db.users.findAll({where: {group_id: groupId},include: [
-            {
-              model: db.groups 
+              model: db.groups ,
+              include: [{model: db.tabs}]
             }
           ]
         }).then((user)=>{
@@ -82,14 +65,34 @@ router.get('/bygroup/:groupId',(req,res, next)=>{
     }    
 });
 
+router.get('/search/:term', function (req, res, next) {
+    db.users.findAll({where: {
+                        $or:[
+                            {   username: {
+                                $iLike:'%'+req.params.term.trim()+'%'
+                            }},
+                            {   user_id: {
+                                $iLike:'%'+req.params.term.trim()+'%'
+                            }}
+                        ]
+                        },include: [
+                            {
+                              model: db.groups 
+                            }
+                          ]
+                    })
+    .then((user)=>{
+        return successPromise(res,user,'200','success');
+    }).catch((err)=>{
+        return failurePromise(res,err,'500','failure')
+    })
+});
 router.put('/:userid', (req,res)=>{
     const userId= req.params.userid;
     const email= req.body.email;
     const groupId= req.body.groupId;
     const username= req.body.username;
     const password= req.body.password;
-    console.log(userId,email,)
-    console.log("updating")
     if (!userId ){
         return failurePromise(res,'request not valid', '400','failure')
     } 

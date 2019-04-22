@@ -34,6 +34,7 @@ logger.debug("end loading")
 const userRoutes = require('./routes/User');
 const statsRoutes = require('./routes/Stats');
 const groupRoutes = require('./routes/Group');
+const authRoutes  = require('./routes/Auth')
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.get('/', function(req, res){
     logger.debug("Please use api endpoints to get or post data!")
@@ -42,6 +43,7 @@ app.get('/', function(req, res){
 app.use('/api/user', userRoutes);
 app.use('/api/group', groupRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/auth', authRoutes);
 
 
 const port = 7001;
