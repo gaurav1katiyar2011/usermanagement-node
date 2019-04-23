@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const UserModel = require('./models/UserModel')
 const GroupModel = require('./models/GroupModel')
 const TabModel = require('./models/TabModel')
+const CustomerModel = require('./models/CustomerModel')
 const Op = Sequelize.Op;
 const operatorsAliases = {
   $eq: Op.eq,
@@ -64,15 +65,17 @@ db.sequelize = sequelize;
 const Users = UserModel(sequelize, Sequelize)
 const Groups = GroupModel(sequelize, Sequelize)
 const Tabs = TabModel(sequelize, Sequelize)
+const Customers = CustomerModel(sequelize, Sequelize)
 db.users = Users;
 db.groups = Groups;
 db.tabs = Tabs;
+db.customers= Customers;
 //Relations
 db.groups.hasMany(db.users, {foreignKey: 'group_id'})
 db.users.belongsTo(db.groups, {foreignKey: 'group_id'})
-
 db.groups.hasMany(db.tabs,{foreignKey: 'group_id'})
 db.tabs.belongsTo(db.groups, {foreignKey: 'group_id'})
+
 // sequelize.sync()
 //   .then(() => {
 //     console.log(`Database & tables created!`)
