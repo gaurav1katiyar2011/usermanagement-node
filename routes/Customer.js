@@ -19,7 +19,10 @@ const failurePromise = (resObj,error,code,message)=>{
 }
 
 router.get('/',(req,res)=>{
-    db.customers.findAll()        
+    db.customers.findAll({where: 
+        {is_deleted:0}
+    
+    })        
     .then((customers)=>{
             if (customers){
                 return successPromise(res,customers,'success')
@@ -49,7 +52,10 @@ router.get('/:customerId',(req,res, next)=>{
     if(!customerId){
         return failurePromise(res,'Request not valid', '400','failure')
     }else{
-        db.customers.findAll({where: {customer_id: customerId}})
+        db.customers.findAll({where: {customer_id: customerId} ,$and:[
+            {is_deleted:{$eq:0}}
+        ]
+         })
         .then((customer)=>{
             return successPromise(res,customer,'success');
         }).catch((err)=>{
@@ -69,6 +75,9 @@ router.get('/search/:term', function (req, res, next) {
                             {   customer_name: {
                                 $iLike:'%'+data+'%'
                             }}
+                        ],
+                        $and:[
+                            {is_deleted:{$eq:0}}
                         ]
                         }           
                     })

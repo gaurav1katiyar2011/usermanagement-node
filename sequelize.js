@@ -73,13 +73,15 @@ db.customers= Customers;
 //Relations
 db.groups.hasMany(db.users, {foreignKey: 'group_id'})
 db.users.belongsTo(db.groups, {foreignKey: 'group_id'})
+db.customers.hasMany(db.users, {foreignKey: 'customer_id'})
+db.users.belongsTo(db.customers, {foreignKey: 'customer_id'})
 db.groups.hasMany(db.tabs,{foreignKey: 'group_id'})
 db.tabs.belongsTo(db.groups, {foreignKey: 'group_id'})
 
-// sequelize.sync()
-//   .then(() => {
-//     console.log(`Database & tables created!`)
-//   })
+sequelize.sync()
+  .then(() => {
+    console.log(`Database & tables created!`)
+  })
 module.exports = db;  
 
 

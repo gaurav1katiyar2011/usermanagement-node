@@ -19,7 +19,7 @@ const failurePromise = (resObj,error,code,message)=>{
 }
 
 router.get('/',(req,res)=>{
-    db.users.findAll( {include: [{ model: db.groups,include: [{model: db.tabs}] }] })        
+    db.users.findAll( {include: [{ model: db.groups,include: [{model: db.tabs}] },{model: db.customers}] })        
     .then((users)=>{
             if (users){
                 return successPromise(res,users,'success')
@@ -34,11 +34,11 @@ router.get('/',(req,res)=>{
     })        
 })
 router.post('/',(req, res, next)=>{
-    const {userId, password, username, groupId,email} = req.body;
+    const {userId, password, username, groupId,email,customerId} = req.body;
     if(!userId && !password && !username && !groupId ){
         return failurePromise(res,'required field ', '400','failure')
     }else{
-        db.users.create({ username, user_id: userId, password, group_id: groupId,email }, { fields: [ 'username', 'user_id','password','group_id','email' ] }).then((user)=> {
+        db.users.create({ username, user_id: userId, password, group_id: groupId,email,customer_id:customerId }, { fields: [ 'username', 'user_id','password','group_id','email','customer_id' ] }).then((user)=> {
             return successPromise(res,user,'200','User Successfully Added');
           }).catch((err)=>{
             return failurePromise(res,err,'500','failure')
@@ -54,7 +54,7 @@ router.get('/:userid',(req,res, next)=>{
             {
               model: db.groups ,
               include: [{model: db.tabs}]
-            }
+            },{model: db.customers}
           ]
         }).then((user)=>{
             return successPromise(res,user,'success');
@@ -77,8 +77,10 @@ router.get('/search/:term', function (req, res, next) {
                         ]
                         },include: [
                             {
-                              model: db.groups 
-                            }
+                              model: db.groups ,
+                              include: [{model: db.tabs}]
+                            },
+                            ,{model: db.customers}
                           ]
                     })
     .then((user)=>{
@@ -93,11 +95,12 @@ router.put('/:userid', (req,res)=>{
     const groupId= req.body.groupId;
     const username= req.body.username;
     const password= req.body.password;
+    const customerId= req.body.customerId;
     if (!userId ){
         return failurePromise(res,'request not valid', '400','failure')
     } 
     db.users.update(
-        {username: username, email:email,password: password,  group_id: groupId},
+        {username: username, email:email,password: password,  group_id: groupId,customer_id:customerId},
         {returning: true, where: {user_id: userId }}
     )
     .then((user) => {

@@ -32,6 +32,10 @@ module.exports = function(sequelize, DataTypes) {
     group_id: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    customer_id: {
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     tableName: 'users'
