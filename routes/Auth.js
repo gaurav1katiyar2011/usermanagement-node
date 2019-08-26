@@ -19,8 +19,8 @@ const failurePromise = (resObj,error,code,message)=>{
 }
 // Building a non-persistent instance
 router.post('/',(req, res, next)=>{
-    userId= req.body.userId
-    password= req.body.password
+    const {userId,password} = req.body;
+    console.log(req.body);
     if(!userId && !password){
         return failurePromise(res,'Not valid user', '400','failure')
     }else{
@@ -38,6 +38,20 @@ router.post('/',(req, res, next)=>{
             }
           }).catch((err)=>{
             return failurePromise(res,err.errors,'500','failure')
+        })
+    }
+})
+
+
+router.post('/',(req, res, next)=>{
+    const {userId, password, username, groupId,email,customerId} = req.body;
+    if(!userId && !password && !username && !groupId ){
+        return failurePromise(res,'required field ', '400','failure')
+    }else{
+        db.users.create({ username, user_id: userId, password, group_id: groupId,email,customer_id:customerId }, { fields: [ 'username', 'user_id','password','group_id','email','customer_id' ] }).then((user)=> {
+            return successPromise(res,user,'200','User Successfully Added');
+          }).catch((err)=>{
+            return failurePromise(res,err,'500','failure')
         })
     }
 })

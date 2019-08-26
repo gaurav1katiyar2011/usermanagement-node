@@ -36,6 +36,11 @@ module.exports = function(sequelize, DataTypes) {
     customer_id: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    is_admin: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
     }
   }, {
     tableName: 'users'
